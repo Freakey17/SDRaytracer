@@ -2,15 +2,37 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <name>src.SDRaytracer</name>
-    <groupId>de.unitrier.st.fst17Freakey17</groupId>
+    <name>FST18</name>
+    <groupId>de.unitrier.st.fst18-public.Freakey17</groupId>
     <artifactId>list</artifactId>
     <version>0.1</version>
-    <url>https://github.com/freakey17/SDRaytracer</url>
+    <url>https://github.com/sbaltes/fst18</url>
 
     <properties>
+        <!-- Project -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <project.build.sourceDirectory>src</project.build.sourceDirectory>
+        <project.build.testSourceDirectory>tests</project.build.testSourceDirectory>
+        <!-- Maven -->
+        <maven.mainclass>SDRaytracer</maven.mainclass>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.plugin.version>3.8.0</maven.compiler.plugin.version>
+        <maven.jar.plugin.version>3.1.0</maven.jar.plugin.version>
+        <maven.assembly.plugin.version>3.1.0</maven.assembly.plugin.version>
+        <maven.source.plugin.version>3.0.1</maven.source.plugin.version>
+        <maven.javadoc.plugin.version>3.0.1</maven.javadoc.plugin.version>
+        <maven.surefire.plugin.version>2.22.1</maven.surefire.plugin.version>
+        <maven.site.plugin.version>3.7.1</maven.site.plugin.version>
+        <!-- latest version of report plugin not compatible with site plugin, see https://stackoverflow.com/a/51099913 -->
+        <maven.projectinforeports.plugin.version>2.9</maven.projectinforeports.plugin.version>
+        <maven.pmd.plugin.version>3.11.0</maven.pmd.plugin.version>
+        <!-- JUnit -->
+        <junit.jupiter.version>LATEST</junit.jupiter.version>
+        <hamcrest.junit.version>LATEST</hamcrest.junit.version>
+        <!-- Other dependencies -->
+        <!-- N/A -->
     </properties>
 
     <dependencies>
@@ -18,94 +40,129 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>5.0.1</version>
+            <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.hamcrest/hamcrest-junit -->
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-junit</artifactId>
+            <version>${hamcrest.junit.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
     <build>
         <!-- configure source and test directories-->
-        <sourceDirectory>src</sourceDirectory>
-        <testSourceDirectory>tests</testSourceDirectory>
+        <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
+        <testSourceDirectory>${project.build.testSourceDirectory}</testSourceDirectory>
 
-        <!-- configure maven plugins -->
         <plugins>
             <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.7.0</version>
+                <version>${maven.compiler.plugin.version}</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
                 </configuration>
             </plugin>
             <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-jar-plugin -->
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.2</version>
+                <version>${maven.jar.plugin.version}</version>
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>src.raytracer.Main.main</mainClass>
+                            <mainClass>${maven.mainclass}</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
+            </plugin>
+            <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-assembly-plugin -->
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>${maven.assembly.plugin.version}</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>${maven.mainclass}</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-source-plugin -->
+            <plugin>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>${maven.source.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-javadoc-plugin -->
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${maven.javadoc.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-surefire-plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <!-- "Due to a memory leak in Surefire 2.20, the junit-platform-surefire-provider currently only works
-                with Surefire 2.19.1." (https://stackoverflow.com/a/46360977) -->
-                <version>2.19.1</version>
-                <!-- http://junit.org/junit5/docs/current/user-guide/#running-tests-build-maven -->
-                <dependencies>
-                    <!-- https://mvnrepository.com/artifact/org.junit.platform/junit-platform-surefire-provider -->
-                    <dependency>
-                        <groupId>org.junit.platform</groupId>
-                        <artifactId>junit-platform-surefire-provider</artifactId>
-                        <version>1.0.1</version>
-                    </dependency>
-                    <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine -->
-                    <dependency>
-                        <groupId>org.junit.jupiter</groupId>
-                        <artifactId>junit-jupiter-engine</artifactId>
-                        <version>5.0.1</version>
-                    </dependency>
-                </dependencies>
+                <version>${maven.surefire.plugin.version}</version>
             </plugin>
         </plugins>
     </build>
 
     <reporting>
         <plugins>
-            <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-project-info-reports-plugin -->
             <plugin>
-                <!-- plugin needed for PMD -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>${maven.site.plugin.version}</version>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>2.7</version>
-                <!-- disable all reports because of Java 8 issues -->
-                <reportSets>
-                    <reportSet>
-                        <reports>
-                        </reports>
-                    </reportSet>
-                </reportSets>
+                <version>${maven.projectinforeports.plugin.version}</version>
             </plugin>
-            <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-jxr-plugin -->
-            <plugin>
-                <!-- plugin needed for PMD -->
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jxr-plugin</artifactId>
-                <version>2.5</version>
-            </plugin>
-            <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-pmd-plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
-                <version>3.8</version>
+                <version>${maven.pmd.plugin.version}</version>
             </plugin>
         </plugins>
     </reporting>
-
 </project>
