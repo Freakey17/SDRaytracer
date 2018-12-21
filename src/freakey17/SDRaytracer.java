@@ -1,20 +1,14 @@
-package Freakey17;
+package freakey17;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import java.awt.Color;
 import java.awt.Container;
 import java.awt.BorderLayout;
 import java.awt.Graphics;
 import java.awt.Dimension;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.ArrayList;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseMotionAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -190,7 +184,7 @@ void renderImage(){
 RGB rayTrace(Ray ray, int rec) {
    if (rec>maxRec) return black;
    IPoint ip = hitObject(ray);  // (ray, p, n, triangle);
-   if (ip.dist>IPoint.epsilon)
+   if (ip.dist>IPoint.EPSILON)
      return lighting(ray, ip, rec);
    else
      return black;
@@ -231,7 +225,7 @@ RGB lighting(Ray ray, IPoint ip, int rec) {
          shadow_ray.dir=light.position.minus(point).mult(-1);
          shadow_ray.dir.normalize();
          IPoint ip2=hitObject(shadow_ray);
-         if(ip2.dist<IPoint.epsilon)
+         if(ip2.dist<IPoint.EPSILON)
          {
            float ratio=Math.max(0,shadow_ray.dir.dot(triangle.normal));
            color = addColors(color,light.color,ratio);

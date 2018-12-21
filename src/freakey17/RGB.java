@@ -1,4 +1,4 @@
-package Freakey17;
+package freakey17;
 import java.awt.*;
 
 /**

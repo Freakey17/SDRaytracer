@@ -1,7 +1,7 @@
 /**
  * Created by Matze on 19.12.2018.
  */
-package Freakey17;
+package freakey17;
 
 class Vec3D {
   float x, y, z, w=1;

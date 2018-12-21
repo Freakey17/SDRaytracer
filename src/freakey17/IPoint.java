@@ -2,11 +2,12 @@
  * Created by Matze on 19.12.2018.
  */
 
-package Freakey17;
+package freakey17;
 
 
 class IPoint {
-  final static float epsilon=0.0001f;
+
+  static final float EPSILON=0.0001f;
   Triangle triangle;
   Vec3D ipoint;
   float dist;

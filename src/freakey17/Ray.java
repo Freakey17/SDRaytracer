@@ -1,7 +1,7 @@
 /**
  * Created by Matze on 19.12.2018.
  */
-package Freakey17;
+package freakey17;
 
 class Ray {
    Vec3D start=new Vec3D(0,0,0);
@@ -13,7 +13,7 @@ class Ray {
 
    // see M�ller&Haines, page 305
    IPoint intersect(Triangle t)
-    { float epsilon=IPoint.epsilon;
+    { float epsilon=IPoint.EPSILON;
       Vec3D e1 = t.p2.minus(t.p1);
       Vec3D e2 = t.p3.minus(t.p1);
       Vec3D p =  dir.cross(e2);
