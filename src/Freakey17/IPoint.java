@@ -1,6 +1,10 @@
 /**
  * Created by Matze on 19.12.2018.
  */
+
+package Freakey17;
+
+
 class IPoint {
   final static float epsilon=0.0001f;
   Triangle triangle;

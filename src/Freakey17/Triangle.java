@@ -1,6 +1,8 @@
 /**
  * Created by Matze on 19.12.2018.
  */
+package Freakey17;
+
 class Triangle
 {  Vec3D p1,p2,p3;
    RGB color;

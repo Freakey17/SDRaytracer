@@ -1,8 +1,11 @@
+package Freakey17;
+
 import java.util.concurrent.Callable;
 
 /**
  * Created by Matze on 19.12.2018.
  */
+
 class RaytraceTask implements Callable
 { SDRaytracer tracer;
   int i;

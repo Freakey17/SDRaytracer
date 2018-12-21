@@ -1,8 +1,11 @@
+package Freakey17;
 import java.awt.*;
 
 /**
  * Created by Matze on 19.12.2018.
  */
+
+
 class RGB {
    float red,green,blue;
    Color color;

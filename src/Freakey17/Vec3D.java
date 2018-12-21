@@ -1,6 +1,8 @@
 /**
  * Created by Matze on 19.12.2018.
  */
+package Freakey17;
+
 class Vec3D {
   float x, y, z, w=1;
   Vec3D(float xx, float yy, float zz) { x=xx; y=yy; z=zz; }

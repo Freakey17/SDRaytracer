@@ -1,8 +1,11 @@
+package Freakey17;
 import java.util.List;
 
 /**
  * Created by Matze on 19.12.2018.
  */
+
+
 class Matrix {
    float val [][] = new float[4][4];
 

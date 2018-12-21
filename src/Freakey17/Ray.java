@@ -1,6 +1,8 @@
 /**
  * Created by Matze on 19.12.2018.
  */
+package Freakey17;
+
 class Ray {
    Vec3D start=new Vec3D(0,0,0);
    Vec3D dir=new Vec3D(0,0,0);
