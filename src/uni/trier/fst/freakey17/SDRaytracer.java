@@ -21,16 +21,16 @@ import java.util.concurrent.Future;
 
 
 
-public class SDRaytracer extends JFrame implements Serializable
+public class SDRaytracer extends JFrame
 {
    private static final long serialVersionUID = 1L;
    boolean profiling=false;
    int widthFrame =1000;
    int heightFrame =1000;
-   
-   Future[] futureList= new Future[widthFrame];
+
+   transient Future[] futureList= new Future[widthFrame];
    int nrOfProcessors = Runtime.getRuntime().availableProcessors();
-   ExecutorService eservice = Executors.newFixedThreadPool(nrOfProcessors);
+   transient ExecutorService eservice = Executors.newFixedThreadPool(nrOfProcessors);
    
    int maxRec=3;
    int rayPerPixel=1;
@@ -38,23 +38,23 @@ public class SDRaytracer extends JFrame implements Serializable
    int startY;
    int startZ;
 
-   List<Triangle> triangles;
+   transient List<Triangle> triangles;
 
-   Light mainLight  = new Light(new Vec3D(0,100,0), new RGB(0.1f,0.1f,0.1f));
+   transient Light mainLight  = new Light(new Vec3D(0,100,0), new RGB(0.1f,0.1f,0.1f));
 
-   Light [] lights= new Light[]{ mainLight
+   transient Light [] lights= new Light[]{ mainLight
                                 ,new Light(new Vec3D(100,200,300), new RGB(0.5f,0,0.0f))
                                 ,new Light(new Vec3D(-100,200,300), new RGB(0.0f,0,0.5f))
                                 //,new Light(new Vec3D(-100,0,0), new RGB(0.0f,0.8f,0.0f))
                               };
 
-   RGB [][] image= new RGB[widthFrame][heightFrame];
+   transient RGB [][] image= new RGB[widthFrame][heightFrame];
    
    float fovx=(float) 0.628;
    float fovy=(float) 0.628;
-   RGB ambientColor =new RGB(0.01f,0.01f,0.01f);
-   RGB backgroundColor =new RGB(0.05f,0.05f,0.05f);
-   RGB black=new RGB(0.0f,0.0f,0.0f);
+   transient RGB ambientColor =new RGB(0.01f,0.01f,0.01f);
+   transient RGB backgroundColor =new RGB(0.05f,0.05f,0.05f);
+   transient RGB black=new RGB(0.0f,0.0f,0.0f);
    int yAngleFactor =4;
    int xAngleFactor =-4;
    
@@ -108,7 +108,7 @@ SDRaytracer()
               if (image==null) return;
               for(int i = 0; i< widthFrame; i++)
                for(int j = 0; j< heightFrame; j++)
-                { g.setColor(image[i][j].color());
+                { g.setColor(image[i][j].coloring());
                   // zeichne einzelnen Pixel
                   g.drawLine(i, heightFrame -j,i, heightFrame -j);
                 }
@@ -153,7 +153,7 @@ SDRaytracer()
         this.setVisible(true);
 }
  
-Ray eyeRay =new Ray();
+transient Ray eyeRay =new Ray();
 double tanFovx;
 double tanFovy;
  
@@ -170,9 +170,12 @@ void renderImage(){
           for(int j = 0; j< heightFrame; j++)
             image[i][j]=col[j];
          }
-   catch (InterruptedException e) {e.printStackTrace();}
-   catch (ExecutionException e) {e.printStackTrace();}
-    }
+        catch (InterruptedException|ExecutionException e)
+        {
+            e.printStackTrace();
+            Thread.currentThread().interrupt();
+        }
+       }
    }
  
 
@@ -199,7 +202,7 @@ IPoint hitObject(Ray ray) {
         if ((idist==-1)||(ip.dist<idist))
          { // save that intersection
           idist=ip.dist;
-          isect.ipoint=ip.ipoint;
+          isect.point =ip.point;
           isect.dist=ip.dist;
           isect.triangle=t;
          }
@@ -215,7 +218,7 @@ RGB addColors(RGB c1, RGB c2, float ratio)
   }
   
 RGB lighting(Ray ray, IPoint ip, int rec) {
-  Vec3D point=ip.ipoint;
+  Vec3D point=ip.point;
   Triangle triangle=ip.triangle;
   RGB color = addColors(triangle.color, ambientColor,1);
   Ray shadowRay=new Ray();
@@ -243,14 +246,14 @@ RGB lighting(Ray ray, IPoint ip, int rec) {
   }
 
   void createScene()
-   {ArrayList<Triangle> triangles = new ArrayList<>();
+   {ArrayList<Triangle> triangleArrayList = new ArrayList<>();
 
    
-     Cube.addCube(triangles, 0,35,0, 10,10,10,new RGB(0.3f,0,0),0.4f);       //rot, klein
-     Cube.addCube(triangles, -70,-20,-20, 20,100,100,new RGB(0f,0,0.3f),.4f);
-     Cube.addCube(triangles, -30,30,40, 20,20,20,new RGB(0,0.4f,0),0.2f);        // gr�n, klein
-     Cube.addCube(triangles, 50,-20,-40, 10,80,100,new RGB(.5f,.5f,.5f), 0.2f);
-     Cube.addCube(triangles, -70,-26,-40, 130,3,40,new RGB(.5f,.5f,.5f), 0.2f);
+     Cube.addCube(triangleArrayList, 0,35,0, 10,10,10,new RGB(0.3f,0,0),0.4f);       //rot, klein
+     Cube.addCube(triangleArrayList, -70,-20,-20, 20,100,100,new RGB(0f,0,0.3f),.4f);
+     Cube.addCube(triangleArrayList, -30,30,40, 20,20,20,new RGB(0,0.4f,0),0.2f);        // gr�n, klein
+     Cube.addCube(triangleArrayList, 50,-20,-40, 10,80,100,new RGB(.5f,.5f,.5f), 0.2f);
+     Cube.addCube(triangleArrayList, -70,-26,-40, 130,3,40,new RGB(.5f,.5f,.5f), 0.2f);
 
 
      Matrix mRx=Matrix.createXRotation((float) (xAngleFactor *Math.PI/16));
@@ -258,7 +261,7 @@ RGB lighting(Ray ray, IPoint ip, int rec) {
      Matrix mT=Matrix.createTranslation(0,0,200);
      Matrix m=mT.mult(mRx).mult(mRy);
      m.print();
-     m.apply(triangles);
+     m.apply(triangleArrayList);
    }
 
 }

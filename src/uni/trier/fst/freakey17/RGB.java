@@ -19,7 +19,7 @@ class RGB {
       red=r; green=g; blue=b;
     }
 
-   Color color()
+   Color coloring()
     { if (color!=null) return color;
       color=new Color((int) (red*255),(int) (green*255), (int) (blue*255));
       return color;

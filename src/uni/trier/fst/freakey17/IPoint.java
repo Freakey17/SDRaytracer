@@ -9,7 +9,7 @@ class IPoint {
 
   static final float EPSILON=0.0001f;
   Triangle triangle;
-  Vec3D ipoint;
+  Vec3D point;
   float dist;
-  IPoint(Triangle tt, Vec3D ip, float d) { triangle=tt; ipoint=ip; dist=d; }
+  IPoint(Triangle tt, Vec3D ip, float d) { triangle=tt; point =ip; dist=d; }
 }
