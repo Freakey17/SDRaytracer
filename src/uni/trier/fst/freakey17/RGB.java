@@ -1,4 +1,4 @@
-package freakey17;
+package uni.trier.fst.freakey17;
 import java.awt.*;
 
 /**
@@ -7,7 +7,9 @@ import java.awt.*;
 
 
 class RGB {
-   float red,green,blue;
+   float red;
+   float green;
+   float blue;
    Color color;
 
    RGB(float r, float g, float b)

@@ -1,10 +1,11 @@
-package freakey17;
+package uni.trier.fst.freakey17;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.Container;
 import java.awt.BorderLayout;
 import java.awt.Graphics;
 import java.awt.Dimension;
+import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
 import java.awt.event.KeyAdapter;
@@ -20,41 +21,44 @@ import java.util.concurrent.Future;
 
 
 
-public class SDRaytracer extends JFrame
+public class SDRaytracer extends JFrame implements Serializable
 {
    private static final long serialVersionUID = 1L;
    boolean profiling=false;
-   int width=1000;
-   int height=1000;
+   int widthFrame =1000;
+   int heightFrame =1000;
    
-   Future[] futureList= new Future[width];
+   Future[] futureList= new Future[widthFrame];
    int nrOfProcessors = Runtime.getRuntime().availableProcessors();
    ExecutorService eservice = Executors.newFixedThreadPool(nrOfProcessors);
    
    int maxRec=3;
    int rayPerPixel=1;
-   int startX, startY, startZ;
+   int startX;
+   int startY;
+   int startZ;
 
    List<Triangle> triangles;
 
    Light mainLight  = new Light(new Vec3D(0,100,0), new RGB(0.1f,0.1f,0.1f));
 
-   Light lights[]= new Light[]{ mainLight
+   Light [] lights= new Light[]{ mainLight
                                 ,new Light(new Vec3D(100,200,300), new RGB(0.5f,0,0.0f))
                                 ,new Light(new Vec3D(-100,200,300), new RGB(0.0f,0,0.5f))
                                 //,new Light(new Vec3D(-100,0,0), new RGB(0.0f,0.8f,0.0f))
                               };
 
-   RGB [][] image= new RGB[width][height];
+   RGB [][] image= new RGB[widthFrame][heightFrame];
    
    float fovx=(float) 0.628;
    float fovy=(float) 0.628;
-   RGB ambient_color=new RGB(0.01f,0.01f,0.01f);
-   RGB background_color=new RGB(0.05f,0.05f,0.05f);
+   RGB ambientColor =new RGB(0.01f,0.01f,0.01f);
+   RGB backgroundColor =new RGB(0.05f,0.05f,0.05f);
    RGB black=new RGB(0.0f,0.0f,0.0f);
-   int y_angle_factor=4, x_angle_factor=-4;
+   int yAngleFactor =4;
+   int xAngleFactor =-4;
    
-public static void  main(String argv[])
+public static void  main(String [] argv)
   { 
   long start = System.currentTimeMillis();
   SDRaytracer sdr=new SDRaytracer();
@@ -65,7 +69,9 @@ public static void  main(String argv[])
   }
 
 void profileRenderImage(){
-  long end, start, time;
+  long end;
+  long start;
+  long time;
 
   renderImage(); // initialisiere Datenstrukturen, erster Lauf verf�lscht sonst Messungen
   
@@ -96,51 +102,41 @@ SDRaytracer()
    Container contentPane = this.getContentPane();
    contentPane.setLayout(new BorderLayout());
    JPanel area = new JPanel() {
+       @Override
             public void paint(Graphics g) {
-              System.out.println("fovx="+fovx+", fovy="+fovy+", xangle="+x_angle_factor+", yangle="+y_angle_factor);
+              System.out.println("fovx="+fovx+", fovy="+fovy+", xangle="+ xAngleFactor +", yangle="+ yAngleFactor);
               if (image==null) return;
-              for(int i=0;i<width;i++)
-               for(int j=0;j<height;j++)
+              for(int i = 0; i< widthFrame; i++)
+               for(int j = 0; j< heightFrame; j++)
                 { g.setColor(image[i][j].color());
                   // zeichne einzelnen Pixel
-                  g.drawLine(i,height-j,i,height-j);
+                  g.drawLine(i, heightFrame -j,i, heightFrame -j);
                 }
             }
            };
            
    addKeyListener(new KeyAdapter()
-         { public void keyPressed(KeyEvent e)
+         { @Override
+             public void keyPressed(KeyEvent e)
             { boolean redraw=false;
               if (e.getKeyCode()==KeyEvent.VK_DOWN)
-                {  x_angle_factor--;
-                   //mainLight.position.y-=10;
-                  //fovx=fovx+0.1f;
-                  //fovy=fovx;
-                  //maxRec--; if (maxRec<0) maxRec=0;
+                {  xAngleFactor--;
+
                   redraw=true;
                 }
               if (e.getKeyCode()==KeyEvent.VK_UP)
-                {  x_angle_factor++;
-                   //mainLight.position.y+=10;
-                  //fovx=fovx-0.1f;
-                  //fovy=fovx;
-                  //maxRec++;if (maxRec>10) return;
+                {  xAngleFactor++;
+
                   redraw=true;
                 }
               if (e.getKeyCode()==KeyEvent.VK_LEFT)
-                { y_angle_factor--;
-                  //mainLight.position.x-=10;
-                  //startX-=10;
-                  //fovx=fovx+0.1f;
-                  //fovy=fovx;
+                { yAngleFactor--;
+
                   redraw=true;
                 }
               if (e.getKeyCode()==KeyEvent.VK_RIGHT)
-                { y_angle_factor++;
-                  //mainLight.position.x+=10;
-                  //startX+=10;
-                  //fovx=fovx-0.1f;
-                  //fovy=fovx;
+                { yAngleFactor++;
+
                   redraw=true;
                 }
               if (redraw)
@@ -151,31 +147,31 @@ SDRaytracer()
             }
          });
          
-        area.setPreferredSize(new Dimension(width,height));
+        area.setPreferredSize(new Dimension(widthFrame, heightFrame));
         contentPane.add(area);
         this.pack();
         this.setVisible(true);
 }
  
-Ray eye_ray=new Ray();
-double tan_fovx;
-double tan_fovy;
+Ray eyeRay =new Ray();
+double tanFovx;
+double tanFovy;
  
 void renderImage(){
-   tan_fovx = Math.tan(fovx);
-   tan_fovy = Math.tan(fovy);
-   for(int i=0;i<width;i++)
-   { futureList[i]=  (Future) eservice.submit(new RaytraceTask(this,i)); 
+   tanFovx = Math.tan(fovx);
+   tanFovy = Math.tan(fovy);
+   for(int i = 0; i< widthFrame; i++)
+   { futureList[i]=  eservice.submit(new RaytraceTask(this,i));
    }
    
-    for(int i=0;i<width;i++)
+    for(int i = 0; i< widthFrame; i++)
        { try {
           RGB [] col = (RGB[]) futureList[i].get();
-          for(int j=0;j<height;j++)
+          for(int j = 0; j< heightFrame; j++)
             image[i][j]=col[j];
          }
-   catch (InterruptedException e) {}
-   catch (ExecutionException e) {}
+   catch (InterruptedException e) {e.printStackTrace();}
+   catch (ExecutionException e) {e.printStackTrace();}
     }
    }
  
@@ -183,7 +179,7 @@ void renderImage(){
 
 RGB rayTrace(Ray ray, int rec) {
    if (rec>maxRec) return black;
-   IPoint ip = hitObject(ray);  // (ray, p, n, triangle);
+   IPoint ip = hitObject(ray);
    if (ip.dist>IPoint.EPSILON)
      return lighting(ray, ip, rec);
    else
@@ -197,6 +193,9 @@ IPoint hitObject(Ray ray) {
    for(Triangle t : triangles)
      { IPoint ip = ray.intersect(t);
         if (ip.dist!=-1)
+        {
+
+        }
         if ((idist==-1)||(ip.dist<idist))
          { // save that intersection
           idist=ip.dist;
@@ -218,33 +217,33 @@ RGB addColors(RGB c1, RGB c2, float ratio)
 RGB lighting(Ray ray, IPoint ip, int rec) {
   Vec3D point=ip.ipoint;
   Triangle triangle=ip.triangle;
-  RGB color = addColors(triangle.color,ambient_color,1);
-  Ray shadow_ray=new Ray();
+  RGB color = addColors(triangle.color, ambientColor,1);
+  Ray shadowRay=new Ray();
    for(Light light : lights)
-       { shadow_ray.start=point;
-         shadow_ray.dir=light.position.minus(point).mult(-1);
-         shadow_ray.dir.normalize();
-         IPoint ip2=hitObject(shadow_ray);
+       { shadowRay.start=point;
+         shadowRay.dir=light.position.minus(point).mult(-1);
+         shadowRay.dir.normalize();
+         IPoint ip2=hitObject(shadowRay);
          if(ip2.dist<IPoint.EPSILON)
          {
-           float ratio=Math.max(0,shadow_ray.dir.dot(triangle.normal));
+           float ratio=Math.max(0,shadowRay.dir.dot(triangle.normal));
            color = addColors(color,light.color,ratio);
          }
        }
      Ray reflection=new Ray();
      //R = 2N(N*L)-L)    L ausgehender Vektor
-     Vec3D L=ray.dir.mult(-1);
+     Vec3D l=ray.dir.mult(-1);
      reflection.start=point;
-     reflection.dir=triangle.normal.mult(2*triangle.normal.dot(L)).minus(L);
+     reflection.dir=triangle.normal.mult(2*triangle.normal.dot(l)).minus(l);
      reflection.dir.normalize();
      RGB rcolor=rayTrace(reflection, rec+1);
-     float ratio =  (float) Math.pow(Math.max(0,reflection.dir.dot(L)), triangle.shininess);
+     float ratio =  (float) Math.pow(Math.max(0,reflection.dir.dot(l)), triangle.shininess);
      color = addColors(color,rcolor,ratio);
      return(color);
   }
 
   void createScene()
-   { triangles = new ArrayList<Triangle>();
+   {ArrayList<Triangle> triangles = new ArrayList<>();
 
    
      Cube.addCube(triangles, 0,35,0, 10,10,10,new RGB(0.3f,0,0),0.4f);       //rot, klein
@@ -254,8 +253,8 @@ RGB lighting(Ray ray, IPoint ip, int rec) {
      Cube.addCube(triangles, -70,-26,-40, 130,3,40,new RGB(.5f,.5f,.5f), 0.2f);
 
 
-     Matrix mRx=Matrix.createXRotation((float) (x_angle_factor*Math.PI/16));
-     Matrix mRy=Matrix.createYRotation((float) (y_angle_factor*Math.PI/16));
+     Matrix mRx=Matrix.createXRotation((float) (xAngleFactor *Math.PI/16));
+     Matrix mRy=Matrix.createYRotation((float) (yAngleFactor *Math.PI/16));
      Matrix mT=Matrix.createTranslation(0,0,200);
      Matrix m=mT.mult(mRx).mult(mRy);
      m.print();

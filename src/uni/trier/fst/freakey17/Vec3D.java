@@ -1,10 +1,13 @@
 /**
  * Created by Matze on 19.12.2018.
  */
-package freakey17;
+package uni.trier.fst.freakey17;
 
 class Vec3D {
-  float x, y, z, w=1;
+  float x;
+  float y;
+  float z;
+  float w=1;
   Vec3D(float xx, float yy, float zz) { x=xx; y=yy; z=zz; }
   Vec3D(float xx, float yy, float zz, float ww) { x=xx; y=yy; z=zz; w=ww; }
   Vec3D add(Vec3D v)

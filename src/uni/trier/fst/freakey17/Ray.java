@@ -1,7 +1,7 @@
 /**
  * Created by Matze on 19.12.2018.
  */
-package freakey17;
+package uni.trier.fst.freakey17;
 
 class Ray {
    Vec3D start=new Vec3D(0,0,0);
@@ -30,7 +30,6 @@ class Ray {
       float dist=f*e2.dot(q);
       if (dist<epsilon) return new IPoint(null,null,-1);
       Vec3D ip=t.p1.mult(1-u-v).add(t.p2.mult(u)).add(t.p3.mult(v));
-      //DEBUG.debug("Intersection point: "+ip.x+","+ip.y+","+ip.z);
       return new IPoint(t,ip,dist);
     }
 }

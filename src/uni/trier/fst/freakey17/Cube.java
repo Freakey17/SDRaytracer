@@ -1,4 +1,4 @@
-package freakey17;
+package uni.trier.fst.freakey17;
 
 import java.util.List;
 

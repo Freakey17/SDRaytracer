@@ -1,7 +1,7 @@
 /**
  * Created by Matze on 19.12.2018.
  */
-package freakey17;
+package uni.trier.fst.freakey17;
 
 class Light {
  private Light(){}
