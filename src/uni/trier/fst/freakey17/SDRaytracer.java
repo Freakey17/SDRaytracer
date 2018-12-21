@@ -5,7 +5,6 @@ import java.awt.Container;
 import java.awt.BorderLayout;
 import java.awt.Graphics;
 import java.awt.Dimension;
-import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
 import java.awt.event.KeyAdapter;
@@ -195,17 +194,14 @@ IPoint hitObject(Ray ray) {
    float idist=-1;
    for(Triangle t : triangles)
      { IPoint ip = ray.intersect(t);
-        if (ip.dist!=-1)
-        {
-
+        if (ip.dist!=-1) {
+            if ((idist == -1) || (ip.dist < idist)) { // save that intersection
+                idist = ip.dist;
+                isect.point = ip.point;
+                isect.dist = ip.dist;
+                isect.triangle = t;
+            }
         }
-        if ((idist==-1)||(ip.dist<idist))
-         { // save that intersection
-          idist=ip.dist;
-          isect.point =ip.point;
-          isect.dist=ip.dist;
-          isect.triangle=t;
-         }
      }
    return isect;  // return intersection point and normal
 }
