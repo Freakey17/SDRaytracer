@@ -39,11 +39,14 @@ public class SDRaytracer extends JFrame
 
    transient List<Triangle> triangles;
 
-   transient Light mainLight  = new Light(new Vec3D(0,100,0), new RGB(0.1f,0.1f,0.1f));
+   //Refactored
+   transient RGB rgb = new RGB();
 
-   transient Light [] lights= new Light[]{ mainLight
-                                ,new Light(new Vec3D(100,200,300), new RGB(0.5f,0,0.0f))
-                                ,new Light(new Vec3D(-100,200,300), new RGB(0.0f,0,0.5f))
+   transient Vec3D mainLight  = new Vec3D(0,100,0, new RGB(0.1f,0.1f,0.1f));
+
+   transient Vec3D [] lights= new Vec3D[]{ mainLight
+                                ,new Vec3D(100,200,300, new RGB(0.5f,0,0.0f))
+                                ,new Vec3D( -100,200,300, new RGB(0.0f,0,0.5f))
                                 //,new Light(new Vec3D(-100,0,0), new RGB(0.0f,0.8f,0.0f))
                               };
 
@@ -183,7 +186,8 @@ RGB rayTrace(Ray ray, int rec) {
    if (rec>maxRec) return black;
    IPoint ip = hitObject(ray);
    if (ip.dist>IPoint.EPSILON)
-     return lighting(ray, ip, rec);
+       //Refactored
+     return rgb.lighting(ray, ip, rec, ambientColor, lights, this);
    else
      return black;
 }
@@ -207,39 +211,6 @@ IPoint hitObject(Ray ray) {
 }
 
 
-RGB addColors(RGB c1, RGB c2, float ratio)
- { return new RGB( (c1.red+c2.red*ratio),
-           (c1.green+c2.green*ratio),
-           (c1.blue+c2.blue*ratio));
-  }
-  
-RGB lighting(Ray ray, IPoint ip, int rec) {
-  Vec3D point=ip.point;
-  Triangle triangle=ip.triangle;
-  RGB color = addColors(triangle.color, ambientColor,1);
-  Ray shadowRay=new Ray();
-   for(Light light : lights)
-       { shadowRay.start=point;
-         shadowRay.dir=light.position.minus(point).mult(-1);
-         shadowRay.dir.normalize();
-         IPoint ip2=hitObject(shadowRay);
-         if(ip2.dist<IPoint.EPSILON)
-         {
-           float ratio=Math.max(0,shadowRay.dir.dot(triangle.normal));
-           color = addColors(color,light.color,ratio);
-         }
-       }
-     Ray reflection=new Ray();
-     //R = 2N(N*L)-L)    L ausgehender Vektor
-     Vec3D l=ray.dir.mult(-1);
-     reflection.start=point;
-     reflection.dir=triangle.normal.mult(2*triangle.normal.dot(l)).minus(l);
-     reflection.dir.normalize();
-     RGB rcolor=rayTrace(reflection, rec+1);
-     float ratio =  (float) Math.pow(Math.max(0,reflection.dir.dot(l)), triangle.shininess);
-     color = addColors(color,rcolor,ratio);
-     return(color);
-  }
 
   void createScene()
    {ArrayList<Triangle> triangleArrayList = new ArrayList<>();
